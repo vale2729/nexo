@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXO · App del Tutor v5</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;
+  background:#ECEDF5;
+  min-height:100vh;
+  padding:28px 24px 40px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+:root{
+  --bg:#FFFFFF;
+  --surf:#F4F4FA;
+  --surf2:#ECEDF5;
+  --p:#3730C8;--p2:#5F5CE0;--p3:#EEEEF9;--p4:#C8C7F0;--p5:#2620A8;
+  --g:#0A6B52;--g2:#10956E;--g3:#E4F2EE;--g4:#9DCFC3;
+  --a:#9C4A00;--a2:#C96800;--a3:#FFF0DC;--a4:#F5C88A;
+  --r:#9B1C1C;--r2:#C82828;--r3:#FDE8E8;--r4:#F8AAAA;
+  --b:#1A3FAA;--b2:#3066D0;--b3:#E8F0FD;--b4:#A8C0F0;
+  --o:#7B3F00;--o2:#B85C00;--o3:#FFF3E8;
+  --txt:#12142A;--txt2:#484B6A;--txt3:#8B90B2;
+  --bdr:#E2E3F0;--bdr2:#CECFEA;
+  --shadow:0 1px 12px rgba(30,28,120,0.06),0 4px 24px rgba(30,28,120,0.04);
+  --shadow2:0 2px 20px rgba(30,28,120,0.10);
+}
+
+/* ── DEMO FRAME ── */
+.demo-title{
+  font-size:13px;font-weight:700;color:var(--txt3);
+  letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:18px;display:flex;align-items:center;gap:10px;
+  width:100%;max-width:360px;
+}
+.demo-title span{
+  background:var(--p);color:#fff;border-radius:6px;
+  padding:3px 9px;font-size:10px;letter-spacing:.05em;
+}
+.demo-wrap{
+  display:flex;justify-content:center;align-items:flex-start;
+  width:100%;
+}
+
+/* ── SCREEN TABS ── */
+.stabs{
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;
+  width:100%;max-width:360px;justify-content:center;
+}
+.stab{
+  padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;
+  cursor:pointer;border:1px solid var(--bdr2);
+  background:var(--bg);color:var(--txt3);transition:all .15s;
+}
+.stab.on{background:var(--p);color:#fff;border-color:var(--p)}
+.stab:hover:not(.on){background:var(--p3);color:var(--p2)}
+
+/* ── PHONE ── */
+.phone{
+  width:320px;border-radius:48px;
+  border:1.5px solid var(--bdr2);
+  background:var(--bg);
+  flex-shrink:0;
+  box-shadow:var(--shadow2),inset 0 0 0 1px rgba(255,255,255,.6);
+  overflow:hidden;
+  position:relative;
+}
+.dyn-island{
+  width:90px;height:30px;background:#0A0A0F;border-radius:20px;
+  margin:12px auto 0;display:block;
+}
+.pbody{
+  overflow-y:auto;
+  max-height:640px;
+  scroll-behavior:smooth;
+}
+.pbody::-webkit-scrollbar{width:0}
+
+/* ── STATUS BAR ── */
+.sbar{
+  padding:8px 22px 0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.sbar-t{font-size:12px;font-weight:700;color:var(--txt)}
+.sbar-r{display:flex;align-items:center;gap:6px}
+.bat{width:24px;height:11px;border-radius:3px;border:1.5px solid var(--bdr2);position:relative}
+.bat::after{content:'';position:absolute;left:2px;top:2px;width:65%;height:calc(100% - 4px);border-radius:1.5px;background:var(--g2)}
+
+/* ── TOP BAR ── */
+.topbar{
+  padding:12px 18px 14px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.topbar-left .label{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase}
+.topbar-left .title{font-size:17px;font-weight:800;color:var(--txt);letter-spacing:-.3px;margin-top:2px}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.tb-btn{
+  width:38px;height:38px;border-radius:14px;
+  background:var(--surf);border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;transition:all .15s;
+  flex-shrink:0;
+}
+.tb-btn:hover{background:var(--p3);border-color:var(--p4)}
+.badge{
+  position:absolute;top:5px;right:5px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--r2);border:1.5px solid var(--bg);
+}
+.av{
+  width:38px;height:38px;border-radius:14px;
+  background:var(--p);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:#fff;
+  flex-shrink:0;cursor:pointer;
+}
+
+/* ── BOTTOM NAV ── */
+.bnav{
+  background:var(--bg);
+  border-top:1px solid var(--bdr);
+  display:flex;
+  padding:10px 4px 14px;
+}
+.bni{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding:2px 0;transition:opacity .15s;
+}
+.bni:hover{opacity:.7}
+.bni-ic{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.bni-ic.on{background:var(--p3)}
+.bni-l{font-size:8.5px;font-weight:600;color:var(--txt3);letter-spacing:.01em}
+.bni-l.on{color:var(--p);font-weight:700}
+.bni-dot{width:4px;height:4px;border-radius:50%;background:var(--r2);margin:0 auto;display:none}
+.bni-dot.show{display:block}
+
+/* ── SECTIONS ── */
+.sec{padding:0 16px;margin-bottom:2px}
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-top:14px}
+.sec-ttl{font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em}
+.sec-action{font-size:10px;font-weight:700;color:var(--p2);cursor:pointer;padding:3px 8px;border-radius:8px;transition:background .12s}
+.sec-action:hover{background:var(--p3)}
+
+/* ── HIJO CARD ── */
+.hijo-card{
+  margin:14px 16px 0;border-radius:24px;
+  background:linear-gradient(135deg,#3730C8 0%,#5F5CE0 60%,#7B78F0 100%);
+  padding:18px 18px 16px;overflow:hidden;position:relative;
+}
+.hc-glow1{position:absolute;top:-30px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none}
+.hc-glow2{position:absolute;bottom:-20px;left:-10px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+.hc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.hc-av{width:44px;height:44px;border-radius:16px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.hc-info{margin-left:11px;flex:1}
+.hc-name{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.2px}
+.hc-sub{color:rgba(255,255,255,.65);font-size:10px;margin-top:3px;font-weight:500}
+.score-pill{background:rgba(255,255,255,.18);border-radius:12px;padding:7px 11px;border:1px solid rgba(255,255,255,.25);text-align:center}
+.sp-n{font-size:20px;font-weight:800;color:#fff;line-height:1;letter-spacing:-.5px}
+.sp-l{font-size:8px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.hc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hcm{background:rgba(255,255,255,.12);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;transition:background .15s}
+.hcm:hover{background:rgba(255,255,255,.22)}
+.hcm-val{font-size:15px;font-weight:800;color:#fff;line-height:1}
+.hcm-lbl{font-size:8px;font-weight:600;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
+
+/* ── ALERT CARD ── */
+.acard{
+  background:var(--bg);border-radius:20px;border:1px solid var(--bdr);
+  padding:14px;margin-bottom:8px;box-shadow:var(--shadow);
+}
+.acard.perm{border-left:3px solid var(--p2)}
+.acard.warn{border-left:3px solid var(--a2)}
+.acard.info{border-left:3px solid var(--b2)}
+.acard.succ{border-left:3px solid var(--g2)}
+.acard-hdr{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.acard-ic{width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.acard-t{font-size:12px;font-weight:700;color:var(--txt);line-height:1.3}
+.acard-sub{font-size:10px;font-weight:500;color:var(--txt3);margin-top:2px}
+.acard-amt{font-size:24px;font-weight:800;color:var(--txt);letter-spacing:-.8px;margin-bottom:4px}
+.ai-box{
+  background:var(--p3);border-radius:12px;padding:10px 12px;
+  border:1px solid var(--p4);margin-bottom:10px;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.ai-ic{width:20px;height:20px;border-radius:7px;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ai-t{font-size:10px;color:var(--p2);line-height:1.55;font-weight:500}
+.btn-row{display:flex;gap:7px}
+.btn{
+  flex:1;padding:10px 0;border-radius:13px;font-size:11px;font-weight:700;
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:opacity .15s;
+}
+.btn:hover{opacity:.82}
+.btn-pri{background:var(--p);color:#fff}
+.btn-sec{background:var(--surf);color:var(--txt2);border:1px solid var(--bdr)}
+.btn-grn{background:var(--g2);color:#fff}
+.btn-red{background:var(--r2);color:#fff}
+.btn-amb{background:var(--a2);color:#fff}
+
+/* ── STAT GRID ── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scard{background:var(--bg);border-radius:18px;padding:14px;border:1px solid var(--bdr);box-shadow:var(--shadow)}
+.scard-ic{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.scard-val{font-size:22px;font-weight:800;color:var(--txt);letter-spacing:-.5px;line-height:1}
+.scard-lbl{font-size:9px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.pill{display:inline-flex;align-items:center;gap:3px;border-radius:7px;padding:2px 8px;font-size:9px;font-weight:700;margin-top:5px}
+.pill-up{background:var(--g3);color:var(--g)}
+.pill-dn{background:var(--r3);color:var(--r)}
+.pill-neu{background:var(--surf);color:var(--txt3)}
+
+/* ── QUICK ACTIONS ── */
+.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qa{
+  background:var(--bg);border-radius:16px;border:1px solid var(--bdr);
+  padding:11px 6px 10px;text-align:center;cursor:pointer;
+  box-shadow:var(--shadow);transition:all .15s;
+}
+.qa:hover{background:var(--p3);border-color:var(--p4);transform:translateY(-1px)}
+.qa-ic{width:32px;height:32px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin:0 auto 7px}
+.qa-l{font-size:9px;font-weight:700;color:var(--txt2)}
+.qa-dot{width:14px;height:5px;border-radius:3px;margin:4px auto 0;display:none}
+.qa-dot.show{display:block}
+
+/* ── LIST ITEMS ── */
+.li{
+  background:var(--bg);border-radius:16px;border:1px solid var(--bdr);
+  padding:12px 13px;margin-bottom:7px;
+  display:flex;align-items:center;gap:11px;box-shadow:var(--shadow);
+}
+.li.new{border-left:3px solid var(--a2);border-radius:0 16px 16px 0}
+.li.active{border-left:3px solid var(--p2);border-radius:0 16px 16px 0}
+.li.done{border-left:3px solid var(--g2);border-radius:0 16px 16px 0}
+.li-ic{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.li-body{flex:1;min-width:0}
+.li-t{font-size:11.5px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-sub{font-size:9.5px;color:var(--txt3);font-weight:500;margin-top:2px;display:flex;align-items:center;gap:4px}
+.prog-track{flex:1;background:var(--surf2);border-radius:3px;height:4px;margin-top:6px}
+.prog-fill{height:4px;border-radius:3px}
+.chip{border-radius:9px;padding:4px 9px;font-size:9px;font-weight:700;white-space:nowrap;flex-shrink:0}
+
+/* ── MOV ── */
+.mov{
+  background:var(--bg);border-radius:14px;border:1px solid var(--bdr);
+  padding:11px 13px;margin-bottom:6px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 1px 8px rgba(30,28,120,.03);
+}
+.mov-ic{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mov-body{flex:1}
+.mov-t{font-size:11px;font-weight:600;color:var(--txt)}
+.mov-m{font-size:9px;color:var(--txt3);margin-top:2px;display:flex;align-items:center;gap:4px}
+.mv-tag{border-radius:5px;padding:1px 6px;font-size:8px;font-weight:700}
+.mv-safe{background:var(--g3);color:var(--g)}
+.mv-warn{background:var(--a3);color:var(--a2)}
+.mv-block{background:var(--r3);color:var(--r2)}
+.mv-breb{background:var(--p3);color:var(--p)}
+.mov-amt{font-size:13px;font-weight:800;white-space:nowrap}
+
+/* ── FAMILY ── */
+.fam-card{
+  background:var(--bg);border-radius:18px;border:1px solid var(--bdr);
+  padding:13px 14px;margin-bottom:7px;
+  display:flex;align-items:center;gap:11px;box-shadow:var(--shadow);
+}
+.fav{width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.fam-info{flex:1}
+.fam-name{font-size:12px;font-weight:700;color:var(--txt)}
+.fam-role{font-size:9.5px;color:var(--txt3);margin-top:2px;display:flex;align-items:center;gap:4px}
+.role-chip{border-radius:6px;padding:2px 7px;font-size:8.5px;font-weight:700}
+.add-card{
+  background:var(--bg);border-radius:18px;border:1.5px dashed var(--bdr2);
+  padding:13px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;
+  transition:border-color .15s;
+}
+.add-card:hover{border-color:var(--p)}
+
+/* ── ZONES ── */
+.zone-card{
+  background:var(--bg);border-radius:18px;border:1px solid var(--bdr);
+  padding:13px 14px;margin-bottom:7px;
+  display:flex;align-items:center;gap:11px;box-shadow:var(--shadow);
+}
+.zone-ic{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.zone-info{flex:1}
+.zone-name{font-size:11.5px;font-weight:700;color:var(--txt)}
+.zone-rule{font-size:9.5px;color:var(--txt3);margin-top:2px}
+.toggle{width:40px;height:23px;border-radius:12px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.tg-on{background:var(--p)}
+.tg-off{background:var(--bdr2)}
+.tdot{position:absolute;width:19px;height:19px;background:#fff;border-radius:50%;top:2px;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .2s}
+.tg-on .tdot{left:19px}
+.tg-off .tdot{left:2px}
+
+/* ── CAT MODULE ── */
+.cat-card{
+  background:var(--bg);border-radius:18px;border:1px solid var(--bdr);
+  padding:14px;margin-bottom:8px;box-shadow:var(--shadow);
+}
+.cat-hdr{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.cat-ic{width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-name{font-size:12px;font-weight:700;color:var(--txt);flex:1}
+.cat-st{border-radius:8px;padding:3px 9px;font-size:9px;font-weight:700}
+.st-free{background:var(--g3);color:var(--g)}
+.st-ctrl{background:var(--a3);color:var(--a2)}
+.st-lock{background:var(--r3);color:var(--r2)}
+.cat-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--surf);border-radius:11px;margin-bottom:5px}
+.cat-row:last-child{margin-bottom:0}
+.cat-rl{font-size:10px;color:var(--txt2);font-weight:500}
+.cat-rv{font-size:10px;font-weight:700;color:var(--txt)}
+.lim-ctrl{display:flex;align-items:center;gap:8px}
+.lim-btn{width:26px;height:26px;border-radius:8px;border:1px solid var(--bdr2);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--p);flex-shrink:0;transition:background .15s;line-height:1}
+.lim-btn:hover{background:var(--p3)}
+.lim-v{font-size:11.5px;font-weight:800;color:var(--txt);min-width:58px;text-align:center}
+.age-bar-wrap{margin-bottom:10px}
+.age-bar-bg{width:100%;background:var(--surf2);border-radius:5px;height:7px;overflow:hidden}
+.age-bar-fg{height:7px;border-radius:5px;background:linear-gradient(90deg,var(--p) 0%,var(--p2) 100%);transition:width .4s}
+.age-legs{display:flex;justify-content:space-between;font-size:8px;color:var(--txt3);font-weight:600;margin-top:4px}
+.age-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.age-pill{background:var(--surf);border:1px solid var(--bdr2);border-radius:20px;padding:5px 12px;font-size:10px;font-weight:600;color:var(--txt3);cursor:pointer;transition:all .15s}
+.age-pill.on{background:var(--p);color:#fff;border-color:var(--p)}
+.age-pill:hover:not(.on){background:var(--p3);color:var(--p2)}
+.unlock-box{
+  background:linear-gradient(120deg,var(--p3),var(--b3));
+  border-radius:14px;border:1px solid var(--p4);
+  padding:11px 12px;display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;
+}
+.unlock-ic{width:34px;height:34px;border-radius:11px;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.unlock-t{font-size:11px;font-weight:700;color:var(--p);margin-bottom:3px}
+.unlock-s{font-size:9.5px;color:var(--p2);font-weight:500;line-height:1.5}
+.loc-now{
+  background:var(--g3);border-radius:14px;border:1px solid var(--g4);
+  padding:11px 13px;display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.loc-ic{width:34px;height:34px;border-radius:11px;background:var(--g2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.loc-info{flex:1}
+.loc-name{font-size:11.5px;font-weight:700;color:var(--g)}
+.loc-sub{font-size:9.5px;color:var(--g2);font-weight:500;margin-top:1px}
+.loc-badge{background:var(--g2);border-radius:7px;padding:3px 9px;font-size:9px;font-weight:700;color:#fff}
+
+/* ── ONBOARDING ── */
+.onb-step{
+  background:var(--bg);border-radius:18px;border:1px solid var(--bdr);
+  padding:14px;margin-bottom:8px;box-shadow:var(--shadow);
+}
+.onb-step.done-s{border-color:var(--g4)}
+.onb-step.active-s{border-color:var(--p4);background:var(--p3)}
+.onb-step.pend-s{opacity:.5}
+.onb-num{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.onb-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.onb-ttl{font-size:12px;font-weight:700;color:var(--txt)}
+.onb-sub{font-size:9.5px;color:var(--txt3);font-weight:500;margin-top:2px}
+.field{background:var(--surf);border-radius:11px;padding:9px 12px;margin-bottom:6px}
+.field:last-child{margin-bottom:0}
+.field-l{font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em}
+.field-v{font-size:12px;font-weight:600;color:var(--txt);margin-top:3px}
+.field-v.ph{color:var(--txt3)}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(12,14,30,.55);
+  z-index:200;display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--bg);border-radius:28px;padding:26px 24px;
+  width:320px;box-shadow:0 16px 60px rgba(30,28,120,.25);
+  animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{transform:scale(.92) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-ic{width:52px;height:52px;border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.modal-t{font-size:17px;font-weight:800;color:var(--txt);letter-spacing:-.3px;margin-bottom:6px}
+.modal-s{font-size:12px;color:var(--txt2);line-height:1.6;margin-bottom:20px}
+.modal-btns{display:flex;gap:10px}
+.mbtn{flex:1;padding:13px 0;border-radius:14px;font-size:12.5px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s;text-align:center;display:flex;align-items:center;justify-content:center}
+.mbtn:hover{opacity:.85}
+.mbtn-p{background:var(--p);color:#fff}
+.mbtn-g{background:var(--g2);color:#fff}
+.mbtn-r{background:var(--r2);color:#fff}
+.mbtn-n{background:var(--surf);color:var(--txt2);border:1px solid var(--bdr)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:36px;left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:#12142A;color:#fff;
+  padding:12px 22px;border-radius:14px;font-size:12px;font-weight:600;
+  z-index:300;opacity:0;transition:all .3s;
+  white-space:nowrap;pointer-events:none;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+
+/* ── PERFIL ── */
+.pref-row{
+  background:var(--bg);border-radius:18px;border:1px solid var(--bdr);
+  padding:13px 14px;margin-bottom:7px;
+  display:flex;align-items:center;gap:11px;cursor:pointer;
+  box-shadow:var(--shadow);transition:background .15s;
+}
+.pref-row:hover{background:var(--p3)}
+.pref-ic{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pref-info{flex:1}
+.pref-t{font-size:12px;font-weight:700;color:var(--txt)}
+.pref-s{font-size:9.5px;color:var(--txt3);margin-top:2px}
+
+/* ── HELPERS ── */
+.divider{height:1px;background:var(--bdr);margin:4px 16px 0}
+.sp{height:14px}
+.tag-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.tag{background:var(--surf2);border-radius:20px;padding:4px 10px;font-size:9px;font-weight:700;color:var(--txt3)}
+svg{display:block}
+
+/* info-col removed */
+</style>
+</head>
+<body>
+
+<!-- ── MODALES ── -->
+<div class="modal-overlay" id="mAprobar">
+  <div class="modal">
+    <div class="modal-ic" style="background:var(--p3)"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="9" stroke="#3730C8" stroke-width="1.8"/><path d="M9 13l3 3 5-5" stroke="#3730C8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="modal-t">Aprobar pago</div>
+    <div class="modal-s">Se autorizarán <b>$50.000</b> en Tienda de Juegos. La IA respalda esta decisión basada en el historial de Sebastián.</div>
+    <div class="modal-btns">
+      <div class="mbtn mbtn-g" onclick="closeModal('mAprobar');toast('✅ Pago aprobado · Sebastián notificado');setTimeout(function(){sw(1)},1200)">Aprobar</div>
+      <div class="mbtn mbtn-n" onclick="closeModal('mAprobar')">Cancelar</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="mRechazar">
+  <div class="modal">
+    <div class="modal-ic" style="background:var(--r3)"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="9" stroke="#C82828" stroke-width="1.8"/><path d="M9.5 9.5l7 7M16.5 9.5l-7 7" stroke="#C82828" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="modal-t">Rechazar pago</div>
+    <div class="modal-s">Se bloqueará el pago de <b>$50.000</b>. Sebastián recibirá una notificación con el motivo del rechazo.</div>
+    <div class="modal-btns">
+      <div class="mbtn mbtn-r" onclick="closeModal('mRechazar');toast('🚫 Pago rechazado · Sebastián notificado');setTimeout(function(){sw(1)},1200)">Rechazar</div>
+      <div class="mbtn mbtn-n" onclick="closeModal('mRechazar')">Cancelar</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="mReto">
+  <div class="modal">
+    <div class="modal-ic" style="background:var(--g3)"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="9" stroke="#10956E" stroke-width="1.8"/><path d="M9 13l3 3 5-5" stroke="#10956E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="modal-t">Aprobar reto y liberar</div>
+    <div class="modal-s">Se liberarán <b>$15.000</b> automáticamente vía Bre-B. Sebastián recibirá +60 pts de score conductual.</div>
+    <div class="modal-btns">
+      <div class="mbtn mbtn-g" onclick="closeModal('mReto');toast('🎉 $15.000 liberados · +60 pts para Sebastián');setTimeout(function(){sw(2)},1200)">Confirmar</div>
+      <div class="mbtn mbtn-n" onclick="closeModal('mReto')">Pedir otra</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="mAddHijo">
+  <div class="modal">
+    <div class="modal-ic" style="background:var(--p3)"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="10" r="5" stroke="#3730C8" stroke-width="1.8"/><path d="M5 22c0-4.4 3.6-8 8-8" stroke="#3730C8" stroke-width="1.8" stroke-linecap="round"/><path d="M18 16v6M15 19h6" stroke="#3730C8" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="modal-t">Añadir nuevo menor</div>
+    <div class="modal-s">Se abrirá el flujo de <b>crear cuenta amparada</b>. Necesitarás el documento de identidad del menor y sus datos básicos.</div>
+    <div class="modal-btns">
+      <div class="mbtn mbtn-p" onclick="closeModal('mAddHijo');sw(7);toast('Iniciando onboarding…')">Comenzar</div>
+      <div class="mbtn mbtn-n" onclick="closeModal('mAddHijo')">Luego</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="mAddFam">
+  <div class="modal">
+    <div class="modal-ic" style="background:var(--a3)"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="10" cy="9" r="4" stroke="#C96800" stroke-width="1.8"/><path d="M4 21c0-3.3 2.7-6 6-6" stroke="#C96800" stroke-width="1.8" stroke-linecap="round"/><path d="M18 13v8M14 17h8" stroke="#C96800" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="modal-t">Invitar familiar</div>
+    <div class="modal-s">Envía un enlace por WhatsApp o SMS. El familiar puede participar y hacer aportes vía Bre-B.</div>
+    <div class="modal-btns">
+      <div class="mbtn mbtn-p" onclick="closeModal('mAddFam');toast('Enlace enviado por WhatsApp')">Enviar enlace</div>
+      <div class="mbtn mbtn-n" onclick="closeModal('mAddFam')">Cancelar</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ══ SCREEN TABS (demo nav) ══ -->
+
+<!-- ════════════ S0: INICIO ════════════ -->
+<div class="demo-wrap" id="s0">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="label">Buenos días</div>
+        <div class="title">Andrea Morales</div>
+      </div>
+      <div class="topbar-right">
+        <div class="tb-btn" onclick="sw(1)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/><path d="M7 14.5a2 2 0 004 0" stroke="#8B90B2" stroke-width="1.3"/></svg><div class="badge"></div></div>
+        <div class="av" onclick="sw(8)">AM</div>
+      </div>
+    </div>
+
+    <!-- Hijo card -->
+    <div class="hijo-card">
+      <div class="hc-glow1"></div><div class="hc-glow2"></div>
+      <div class="hc-top">
+        <div style="display:flex;align-items:center;gap:11px;flex:1">
+          <div class="hc-av">SA</div>
+          <div class="hc-info">
+            <div class="hc-name">Sebastián</div>
+            <div class="hc-sub">15 años · 🔥 11 días</div>
+          </div>
+        </div>
+        <div class="score-pill"><div class="sp-n">78</div><div class="sp-l">Score</div></div>
+      </div>
+      <div class="hc-metrics">
+        <div class="hcm" onclick="sw(6)"><div class="hcm-val">$47.5K</div><div class="hcm-lbl">Saldo</div></div>
+        <div class="hcm" onclick="sw(6)"><div class="hcm-val">$18K</div><div class="hcm-lbl">Ahorrado</div></div>
+        <div class="hcm" onclick="sw(2)"><div class="hcm-val">5/7</div><div class="hcm-lbl">Retos</div></div>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Acciones</div></div>
+      <div class="qa-grid">
+        <div class="qa" onclick="sw(1)">
+          <div class="qa-ic" style="background:var(--r3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1C5.2 1 3 3.2 3 6c0 3.5-2 4.5-2 4.5h14s-2-1-2-4.5C13 3.2 10.8 1 8 1Z" stroke="#C82828" stroke-width="1.3"/><path d="M6 13a2 2 0 004 0" stroke="#C82828" stroke-width="1.3"/></svg></div>
+          <div class="qa-l">Alertas</div>
+          <div class="qa-dot show" style="background:var(--r2)"></div>
+        </div>
+        <div class="qa" onclick="sw(2)">
+          <div class="qa-ic" style="background:var(--p3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L9.5 5.5H14L10.5 8L11.8 12.5L8 10L4.2 12.5L5.5 8L2 5.5H6.5L8 1.5Z" stroke="#3730C8" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+          <div class="qa-l">Retos</div>
+          <div class="qa-dot show" style="background:var(--a2)"></div>
+        </div>
+        <div class="qa" onclick="sw(4)">
+          <div class="qa-ic" style="background:var(--g3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="2" stroke="#0A6B52" stroke-width="1.3"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="2" stroke="#0A6B52" stroke-width="1.3"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="2" stroke="#0A6B52" stroke-width="1.3"/><rect x="9" y="9" width="5.5" height="5.5" rx="2" stroke="#0A6B52" stroke-width="1.3"/></svg></div>
+          <div class="qa-l">Categorías</div>
+          <div class="qa-dot" style="background:var(--p)"></div>
+        </div>
+        <div class="qa" onclick="openModal('mAddHijo')">
+          <div class="qa-ic" style="background:var(--b3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7.5" cy="6" r="3" stroke="#1A3FAA" stroke-width="1.3"/><path d="M2 14c0-3 2.5-5 5.5-5" stroke="#1A3FAA" stroke-width="1.3" stroke-linecap="round"/><path d="M13 10v4M11 12h4" stroke="#1A3FAA" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="qa-l">+ Menor</div>
+          <div class="qa-dot" style="background:var(--b2)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pendientes -->
+    <div class="sec">
+      <div class="sec-hdr">
+        <div class="sec-ttl">Requieren tu atención</div>
+        <div style="background:var(--r3);border-radius:7px;padding:2px 8px;font-size:9px;font-weight:700;color:var(--r2)">2</div>
+      </div>
+      <div class="acard perm">
+        <div class="acard-hdr">
+          <div class="acard-ic" style="background:var(--p3)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="3" stroke="#3730C8" stroke-width="1.4"/><path d="M2 9h16" stroke="#3730C8" stroke-width="1.2"/></svg></div>
+          <div><div class="acard-t">Sebastián quiere pagar</div><div class="acard-sub">Tienda de Juegos · hace 2 min</div></div>
+        </div>
+        <div class="acard-amt">$50.000</div>
+        <div class="ai-box">
+          <div class="ai-ic"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1L7 4.5H11L8 6.8L9 10L5.5 7.8L2 10L3 6.8L0 4.5H4L5.5 1Z" fill="#fff"/></svg></div>
+          <div class="ai-t">18 días sin sobregiro · 5/7 retos completos. Score +4 este mes. La IA sugiere <b>aprobar</b>.</div>
+        </div>
+        <div class="btn-row">
+          <div class="btn btn-pri" onclick="openModal('mAprobar')"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#fff" stroke-width="1.3"/><path d="M4 6.5l2 2 3-3" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Aprobar</div>
+          <div class="btn btn-sec" onclick="openModal('mRechazar')">Rechazar</div>
+        </div>
+      </div>
+      <div class="acard info">
+        <div class="acard-hdr">
+          <div class="acard-ic" style="background:var(--b3)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="3" stroke="#1A3FAA" stroke-width="1.4"/><circle cx="8" cy="9" r="2.5" stroke="#1A3FAA" stroke-width="1.2"/><path d="M3 16l4-4 3 3 3.5-3.5 4 4" stroke="#1A3FAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="acard-t">Evidencia de reto enviada</div><div class="acard-sub">Tareas del hogar ×3 · foto adjunta</div></div>
+        </div>
+        <div class="btn-row">
+          <div class="btn btn-grn" style="flex:2" onclick="openModal('mReto')">Aprobar y liberar $15K</div>
+          <div class="btn btn-sec" onclick="toast('Evidencia marcada — pendiente foto nueva')">Pedir otra</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats rápidos -->
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Resumen mayo</div><div class="sec-action" onclick="sw(6)">Ver todo →</div></div>
+      <div class="stat-grid">
+        <div class="scard" onclick="sw(6)" style="cursor:pointer">
+          <div class="scard-ic" style="background:var(--r3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3.5" width="11" height="8" rx="2" stroke="#C82828" stroke-width="1.2"/><path d="M1.5 6.5h11" stroke="#C82828" stroke-width="1.1"/></svg></div>
+          <div class="scard-val">$38.5K</div>
+          <div class="scard-lbl">Gasto mes</div>
+          <div class="pill pill-dn">↑ +12% abr</div>
+        </div>
+        <div class="scard" onclick="sw(6)" style="cursor:pointer">
+          <div class="scard-ic" style="background:var(--g3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12V2M3.5 5.5L7 2l3.5 3.5" stroke="#0A6B52" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="scard-val" style="color:var(--g)">$18K</div>
+          <div class="scard-lbl">Ahorro</div>
+          <div class="pill pill-up">↑ +8% abr</div>
+        </div>
+        <div class="scard" onclick="sw(6)" style="cursor:pointer">
+          <div class="scard-ic" style="background:var(--p3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10L5.5 6.5L8 9L12.5 4" stroke="#3730C8" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+          <div class="scard-val" style="color:var(--p)">18 días</div>
+          <div class="scard-lbl">Sin sobregiro</div>
+        </div>
+        <div class="scard" onclick="sw(2)" style="cursor:pointer">
+          <div class="scard-ic" style="background:var(--a3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.5 5.5H12.5L9.5 7.8L10.5 12L7 10L3.5 12L4.5 7.8L1.5 5.5H5.5L7 1.5Z" stroke="#C96800" stroke-width="1.1" stroke-linejoin="round"/></svg></div>
+          <div class="scard-val" style="color:var(--a2)">5 / 7</div>
+          <div class="scard-lbl">Retos activos</div>
+        </div>
+      </div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic on"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" fill="rgba(55,48,200,.15)" stroke="#3730C8" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l on">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/><path d="M7 14.5a2 2 0 004 0" stroke="#8B90B2" stroke-width="1.3"/></svg></div><div class="bni-l">Alertas</div><div class="bni-dot show"></div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ S1: ALERTAS ════════════ -->
+<div class="demo-wrap" id="s1" style="display:none">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left"><div class="label">Centro de alertas</div><div class="title">3 sin resolver</div></div>
+      <div class="topbar-right"><div class="av" onclick="sw(8)">AM</div></div>
+    </div>
+
+    <div class="sec">
+      <div class="tag-row">
+        <div class="tag" style="background:var(--r3);color:var(--r2)">● Pagos (1)</div>
+        <div class="tag" style="background:var(--b3);color:var(--b2)">● Retos (1)</div>
+        <div class="tag" style="background:var(--a3);color:var(--a2)">● Conducta (1)</div>
+        <div class="tag">Resueltas (2)</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Pendientes</div></div>
+
+      <!-- Pago -->
+      <div class="acard perm">
+        <div class="acard-hdr">
+          <div class="acard-ic" style="background:var(--p3)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="3" stroke="#3730C8" stroke-width="1.4"/><path d="M2 9h16" stroke="#3730C8" stroke-width="1.2"/></svg></div>
+          <div><div class="acard-t">Solicitud de pago · Tienda de Juegos</div><div class="acard-sub">$50.000 · C.C. Gran Estación · hace 2 min</div></div>
+        </div>
+        <div class="ai-box">
+          <div class="ai-ic"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1L7 4.5H11L8 6.8L9 10L5.5 7.8L2 10L3 6.8L0 4.5H4L5.5 1Z" fill="#fff"/></svg></div>
+          <div class="ai-t">Historial positivo: 18 días sin sobregiro. Supera límite diario en $8.400 pero el score respalda. La IA sugiere <b>aprobar con nota</b>.</div>
+        </div>
+        <div class="btn-row">
+          <div class="btn btn-grn" onclick="openModal('mAprobar')">Aprobar</div>
+          <div class="btn btn-sec" onclick="openModal('mRechazar')">Rechazar</div>
+        </div>
+      </div>
+
+      <!-- Evidencia reto -->
+      <div class="acard info">
+        <div class="acard-hdr">
+          <div class="acard-ic" style="background:var(--b3)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="3" stroke="#1A3FAA" stroke-width="1.4"/><circle cx="8" cy="9" r="2.5" stroke="#1A3FAA" stroke-width="1.2"/><path d="M3 16l4-4 3 3 3.5-3.5 4 4" stroke="#1A3FAA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="acard-t">Evidencia enviada · Tareas del hogar</div><div class="acard-sub">foto_cocina_tarea3.jpg · hoy 8:30am</div></div>
+        </div>
+        <div class="btn-row">
+          <div class="btn btn-grn" style="flex:2" onclick="openModal('mReto')">Aprobar y liberar $15K</div>
+          <div class="btn btn-sec" onclick="toast('Solicitando nueva evidencia…')">Pedir otra</div>
+        </div>
+      </div>
+
+      <!-- Conducta -->
+      <div class="acard warn">
+        <div class="acard-hdr">
+          <div class="acard-ic" style="background:var(--a3)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2.5L17 14.5H3L10 2.5Z" stroke="#C96800" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 8v4" stroke="#C96800" stroke-width="1.4" stroke-linecap="round"/><circle cx="10" cy="13.5" r="1" fill="#C96800"/></svg></div>
+          <div><div class="acard-t">Ritmo de gasto acelerado</div><div class="acard-sub">74% del saldo antes de las 2pm · hoy</div></div>
+        </div>
+        <div class="ai-box" style="background:var(--a3);border-color:var(--a4)">
+          <div class="ai-ic" style="background:var(--a2)"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1L7 4.5H11L8 6.8L9 10L5.5 7.8L2 10L3 6.8L0 4.5H4L5.5 1Z" fill="#fff"/></svg></div>
+          <div class="ai-t" style="color:var(--a)">IA pausó desembolsos y envió alerta educativa a Sebastián. No requiere acción inmediata.</div>
+        </div>
+        <div class="btn-row">
+          <div class="btn btn-amb" style="flex:2" onclick="sw(6)">Ver movimientos de hoy</div>
+          <div class="btn btn-sec" onclick="toast('Alerta descartada')">Ignorar</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Resueltas hoy</div></div>
+      <div class="mov">
+        <div class="mov-ic" style="background:var(--g3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#0A6B52" stroke-width="1.3"/><path d="M5.5 8l2 2 3-3" stroke="#0A6B52" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+        <div class="mov-body"><div class="mov-t">Reto aprobado · Abuela Rosa</div><div class="mov-m">Hace 1h · "Sin compras impulsivas"</div></div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#0A6B52" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="#0A6B52" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="mov">
+        <div class="mov-ic" style="background:var(--r3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#C82828" stroke-width="1.3"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="#C82828" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+        <div class="mov-body"><div class="mov-t">Pago rechazado · zona no autorizada</div><div class="mov-m">Ayer · $35.000 · C.C. Andino</div></div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#C82828" stroke-width="1.2"/><path d="M5 5l4 4M9 5L5 9" stroke="#C82828" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" stroke="#8B90B2" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic on"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" fill="rgba(55,48,200,.15)" stroke="#3730C8" stroke-width="1.4"/><path d="M7 14.5a2 2 0 004 0" stroke="#3730C8" stroke-width="1.3"/></svg></div><div class="bni-l on">Alertas</div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ S2: RETOS ════════════ -->
+<div class="demo-wrap" id="s2" style="display:none">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left"><div class="label">Gestión</div><div class="title">Retos · Sebastián</div></div>
+      <div class="topbar-right">
+        <div class="tb-btn" onclick="toast('Crear nuevo reto…')" style="background:var(--p);border-color:var(--p)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="av" onclick="sw(8)">AM</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Pendiente revisión</div><div style="background:var(--a3);border-radius:7px;padding:2px 8px;font-size:9px;font-weight:700;color:var(--a2)">1 nuevo</div></div>
+      <div class="li new">
+        <div class="li-ic" style="background:var(--a3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="6" r="3" stroke="#C96800" stroke-width="1.3"/><path d="M3 16c0-3 2.2-5 5-5" stroke="#C96800" stroke-width="1.3" stroke-linecap="round"/><path d="M13.5 10v5M11 12.5h5" stroke="#C96800" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="li-body"><div class="li-t">Sin compras impulsivas esta semana</div><div class="li-sub">Abuela Rosa · +60 pts · 7 días</div></div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div class="btn btn-pri" style="padding:5px 10px;font-size:9px;border-radius:9px" onclick="toast('✅ Reto aprobado · Sebastián notificado');setTimeout(function(){sw(2)},1200)">Aprobar</div>
+          <div class="btn btn-sec" style="padding:5px 10px;font-size:9px;border-radius:9px" onclick="toast('Editando reto…')">Editar</div>
+        </div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">En curso · 4</div></div>
+      <div class="li active">
+        <div class="li-ic" style="background:var(--g3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 14V4M5 8l4-4 4 4" stroke="#0A6B52" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="li-body">
+          <div class="li-t">Ahorra $20K este mes</div>
+          <div class="li-sub">Tú · +80 pts · 10 días restantes</div>
+          <div class="prog-track"><div class="prog-fill" style="width:90%;background:var(--g2)"></div></div>
+        </div>
+        <div class="chip" style="background:var(--g3);color:var(--g)">90%</div>
+      </div>
+      <div class="li active">
+        <div class="li-ic" style="background:var(--p3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L14 4.5V9c0 3.5-2.2 6-5 7-2.8-1-5-3.5-5-7V4.5L9 2Z" stroke="#3730C8" stroke-width="1.3" stroke-linejoin="round"/><path d="M6.5 9l2 2 3-3" stroke="#3730C8" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+        <div class="li-body">
+          <div class="li-t">Semana sin sobregiro</div>
+          <div class="li-sub">Tú · +50 pts · 4 de 7 días</div>
+          <div class="prog-track"><div class="prog-fill" style="width:57%;background:var(--p2)"></div></div>
+        </div>
+        <div class="chip" style="background:var(--p3);color:var(--p)">57%</div>
+      </div>
+      <div class="li active">
+        <div class="li-ic" style="background:var(--b3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2.5" stroke="#1A3FAA" stroke-width="1.3"/><path d="M6 7h6M6 10h4" stroke="#1A3FAA" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+        <div class="li-body">
+          <div class="li-t">Lee 1 artículo financiero</div>
+          <div class="li-sub">Abuelo Pedro · +30 pts · hoy</div>
+          <div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--b2)"></div></div>
+        </div>
+        <div class="chip" style="background:var(--surf);color:var(--txt3)">Pendiente</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Completados · mayo</div><div class="sec-action" onclick="sw(6)">Ver todo →</div></div>
+      <div class="li done">
+        <div class="li-ic" style="background:var(--g3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#10956E" stroke-width="1.3"/><path d="M6 9l2.5 2.5 4-4" stroke="#10956E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="li-body"><div class="li-t">Tareas del hogar ×3</div><div class="li-sub">Tú · completado ayer · +60 pts</div></div>
+        <div class="chip" style="background:var(--g3);color:var(--g)">+60 pts</div>
+      </div>
+      <div class="li done">
+        <div class="li-ic" style="background:var(--g3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#10956E" stroke-width="1.3"/><path d="M6 9l2.5 2.5 4-4" stroke="#10956E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="li-body"><div class="li-t">5 días sin sobregiro</div><div class="li-sub">Tú · hace 5 días · +80 pts</div></div>
+        <div class="chip" style="background:var(--g3);color:var(--g)">+80 pts</div>
+      </div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" stroke="#8B90B2" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/><path d="M7 14.5a2 2 0 004 0" stroke="#8B90B2" stroke-width="1.3"/></svg></div><div class="bni-l">Alertas</div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ S3: FAMILIA ════════════ -->
+<div class="demo-wrap" id="s3" style="display:none">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left"><div class="label">Red de apoyo</div><div class="title">Familia</div></div>
+      <div class="topbar-right">
+        <div class="tb-btn" style="background:var(--p);border-color:var(--p)" onclick="openModal('mAddFam')"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="av" onclick="sw(8)">AM</div>
+      </div>
+    </div>
+
+    <!-- Tutores -->
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Tutores · control total</div><div class="role-chip" style="background:var(--p3);color:var(--p)">Admin</div></div>
+      <div class="fam-card" style="border-color:rgba(55,48,200,.2)">
+        <div class="fav" style="background:var(--p3);color:var(--p)">AM</div>
+        <div class="fam-info"><div class="fam-name">Andrea Morales · Mamá</div><div class="fam-role">Mesada · retos · zonas · categorías</div></div>
+        <div class="role-chip" style="background:var(--p3);color:var(--p)">Tú</div>
+      </div>
+      <div class="fam-card" style="border-color:rgba(55,48,200,.2)">
+        <div class="fav" style="background:var(--p3);color:var(--p)">CR</div>
+        <div class="fam-info"><div class="fam-name">Carlos Ramírez · Papá</div><div class="fam-role">Mesada · retos · zonas</div></div>
+        <div class="role-chip" style="background:var(--g3);color:var(--g)">Activo</div>
+      </div>
+    </div>
+
+    <!-- Colaboradores -->
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Colaboradores · padrinos</div><div class="sec-action" onclick="openModal('mAddFam')">+ Invitar</div></div>
+      <div class="fam-card">
+        <div class="fav" style="background:var(--a3);color:var(--a2)">AR</div>
+        <div class="fam-info">
+          <div class="fam-name">Abuela Rosa</div>
+          <div class="fam-role"><span class="role-chip" style="background:var(--p3);color:var(--p)">Retos</span> <span class="role-chip" style="background:var(--g3);color:var(--g)">Aportes Bre-B</span></div>
+        </div>
+        <div style="text-align:right"><div style="font-size:11px;font-weight:800;color:var(--g)">+$20K</div><div style="font-size:8.5px;color:var(--txt3)">este mes</div></div>
+      </div>
+      <div class="fam-card">
+        <div class="fav" style="background:var(--g3);color:var(--g)">AP</div>
+        <div class="fam-info">
+          <div class="fam-name">Abuelo Pedro</div>
+          <div class="fam-role"><span class="role-chip" style="background:var(--p3);color:var(--p)">Retos</span> <span class="role-chip" style="background:var(--g3);color:var(--g)">Aportes Bre-B</span></div>
+        </div>
+        <div style="text-align:right"><div style="font-size:11px;font-weight:800;color:var(--g)">+$15K</div><div style="font-size:8.5px;color:var(--txt3)">este mes</div></div>
+      </div>
+      <div class="fam-card">
+        <div class="fav" style="background:var(--b3);color:var(--b2)">TM</div>
+        <div class="fam-info">
+          <div class="fam-name">Tío Martín</div>
+          <div class="fam-role"><span class="role-chip" style="background:var(--g3);color:var(--g)">Solo aportes</span></div>
+        </div>
+        <div style="text-align:right"><div style="font-size:11px;font-weight:800;color:var(--txt3)">$0</div><div style="font-size:8.5px;color:var(--txt3)">este mes</div></div>
+      </div>
+      <div class="add-card" onclick="openModal('mAddFam')">
+        <div style="width:38px;height:38px;border-radius:13px;background:var(--p3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="#3730C8" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div><div style="font-size:12px;font-weight:700;color:var(--p)">Invitar familiar o padrino</div></div>
+      </div>
+    </div>
+
+    <!-- Menor vinculado -->
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Menor vinculado</div><div class="sec-action" onclick="openModal('mAddHijo')">+ Agregar</div></div>
+      <div class="fam-card" style="border-color:rgba(55,48,200,.2)">
+        <div class="hc-av" style="width:38px;height:38px;border-radius:13px;background:var(--p);font-size:12px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">SA</div>
+        <div class="fam-info"><div class="fam-name">Sebastián · 15 años</div><div class="fam-role">Score 78 · cuenta activa</div></div>
+        <div class="role-chip" style="background:var(--g3);color:var(--g)">Activo</div>
+      </div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" stroke="#8B90B2" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/><path d="M7 14.5a2 2 0 004 0" stroke="#8B90B2" stroke-width="1.3"/></svg></div><div class="bni-l">Alertas</div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic on"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#3730C8" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l on">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ S4: CATEGORÍAS ════════════ -->
+<div class="demo-wrap" id="s4" style="display:none">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left"><div class="label">Control de gasto</div><div class="title">Categorías</div></div>
+      <div class="topbar-right"><div class="av" onclick="sw(8)">AM</div></div>
+    </div>
+
+    <div class="sec">
+      <div class="unlock-box">
+        <div class="unlock-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11 6.5H16L12 9.5L13.5 14.5L9 11.5L4.5 14.5L6 9.5L2 6.5H7L9 2Z" fill="rgba(255,255,255,.2)" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+        <div><div class="unlock-t">Sebastián · Score 78 · 15 años</div><div class="unlock-s">Las restricciones se relajan automáticamente con la edad y el score. Puedes ajustar manualmente cualquier categoría.</div></div>
+      </div>
+      <div class="age-bar-wrap">
+        <div class="age-bar-bg"><div class="age-bar-fg" id="age-bar" style="width:63%"></div></div>
+        <div class="age-legs"><span>11</span><span>13</span><span>15 ●</span><span>17</span></div>
+      </div>
+      <div class="age-pills" id="age-pills">
+        <div class="age-pill" onclick="setAge(11,this)">11</div>
+        <div class="age-pill" onclick="setAge(12,this)">12</div>
+        <div class="age-pill" onclick="setAge(13,this)">13</div>
+        <div class="age-pill" onclick="setAge(14,this)">14</div>
+        <div class="age-pill on" onclick="setAge(15,this)">15 ●</div>
+        <div class="age-pill" onclick="setAge(16,this)">16</div>
+        <div class="age-pill" onclick="setAge(17,this)">17</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Categorías configurables</div></div>
+
+      <div class="cat-card">
+        <div class="cat-hdr">
+          <div class="cat-ic" style="background:var(--g3)"><span style="font-size:16px">🍽️</span></div>
+          <div class="cat-name">Alimentación</div>
+          <div class="cat-st st-free" id="cst-alim">Libre</div>
+        </div>
+        <div class="cat-row"><div class="cat-rl">Límite diario</div><div class="lim-ctrl"><div class="lim-btn" onclick="cl('cv-alim',-5000)">−</div><div class="lim-v" id="cv-alim">$35.000</div><div class="lim-btn" onclick="cl('cv-alim',5000)">+</div></div></div>
+        <div class="cat-row"><div class="cat-rl">Solicita aprobación si supera</div><div class="cat-rv" style="color:var(--txt3)">Sin límite</div></div>
+      </div>
+
+      <div class="cat-card">
+        <div class="cat-hdr">
+          <div class="cat-ic" style="background:var(--b3)"><span style="font-size:16px">🚌</span></div>
+          <div class="cat-name">Transporte</div>
+          <div class="cat-st st-free" id="cst-transp">Libre</div>
+        </div>
+        <div class="cat-row"><div class="cat-rl">Límite diario</div><div class="lim-ctrl"><div class="lim-btn" onclick="cl('cv-transp',-5000)">−</div><div class="lim-v" id="cv-transp">$20.000</div><div class="lim-btn" onclick="cl('cv-transp',5000)">+</div></div></div>
+      </div>
+
+      <div class="cat-card">
+        <div class="cat-hdr">
+          <div class="cat-ic" style="background:var(--p3)"><span style="font-size:16px">🎮</span></div>
+          <div class="cat-name">Entretenimiento</div>
+          <div class="cat-st st-ctrl" id="cst-entret">Control</div>
+        </div>
+        <div class="cat-row"><div class="cat-rl">Límite diario</div><div class="lim-ctrl"><div class="lim-btn" onclick="cl('cv-entret',-5000)">−</div><div class="lim-v" id="cv-entret">$25.000</div><div class="lim-btn" onclick="cl('cv-entret',5000)">+</div></div></div>
+        <div class="cat-row"><div class="cat-rl">Aprobación si supera</div><div class="lim-ctrl"><div class="lim-btn" onclick="cl('cv-entret-ap',-5000)">−</div><div class="lim-v" id="cv-entret-ap">$30.000</div><div class="lim-btn" onclick="cl('cv-entret-ap',5000)">+</div></div></div>
+        <div class="cat-row"><div class="cat-rl">Horario</div><div class="cat-rv">12pm – 9pm</div></div>
+        <div style="background:var(--a3);border-radius:10px;padding:7px 10px;margin-top:7px;font-size:9px;color:var(--a2)">⚡ Se desbloqueó a Control a los 13 años por buen score. Se libera completamente a los 16 si score &gt; 85 pts.</div>
+      </div>
+
+      <div class="cat-card">
+        <div class="cat-hdr">
+          <div class="cat-ic" style="background:var(--a3)"><span style="font-size:16px">👗</span></div>
+          <div class="cat-name">Moda y ropa</div>
+          <div class="cat-st st-ctrl" id="cst-moda">Control</div>
+        </div>
+        <div class="cat-row"><div class="cat-rl">Límite mensual</div><div class="lim-ctrl"><div class="lim-btn" onclick="cl('cv-moda',-10000)">−</div><div class="lim-v" id="cv-moda">$80.000</div><div class="lim-btn" onclick="cl('cv-moda',10000)">+</div></div></div>
+        <div class="cat-row"><div class="cat-rl">Siempre requiere aprobación</div><div><div class="toggle tg-off" onclick="tgl(this)"><div class="tdot"></div></div></div></div>
+      </div>
+
+      <div class="cat-card">
+        <div class="cat-hdr">
+          <div class="cat-ic" style="background:var(--surf)"><span style="font-size:16px">📱</span></div>
+          <div class="cat-name">Tecnología / Apps</div>
+          <div class="cat-st st-ctrl" id="cst-tech">Control</div>
+        </div>
+        <div class="cat-row"><div class="cat-rl">Límite mensual</div><div class="lim-ctrl"><div class="lim-btn" onclick="cl('cv-tech',-10000)">−</div><div class="lim-v" id="cv-tech">$50.000</div><div class="lim-btn" onclick="cl('cv-tech',10000)">+</div></div></div>
+        <div class="cat-row"><div class="cat-rl">Siempre requiere aprobación</div><div><div class="toggle tg-on" onclick="tgl(this)"><div class="tdot"></div></div></div></div>
+        <div style="background:var(--p3);border-radius:10px;padding:7px 10px;margin-top:7px;font-size:9px;color:var(--p2)">★ A los 16 años con score &gt; 85 pts se habilitará gasto libre.</div>
+      </div>
+
+      <div class="cat-card" style="opacity:.6">
+        <div class="cat-hdr">
+          <div class="cat-ic" style="background:var(--r3)"><span style="font-size:16px">🎲</span></div>
+          <div class="cat-name">Juegos de azar</div>
+          <div class="cat-st st-lock">Bloqueado</div>
+        </div>
+        <div class="cat-row"><div class="cat-rl">Motivo</div><div class="cat-rv" style="color:var(--r2)">Regulación SFC · menores</div></div>
+      </div>
+
+      <div class="cat-card" style="opacity:.6">
+        <div class="cat-hdr">
+          <div class="cat-ic" style="background:var(--r3)"><span style="font-size:16px">🚫</span></div>
+          <div class="cat-name">Alcohol y tabaco</div>
+          <div class="cat-st st-lock">Bloqueado</div>
+        </div>
+        <div class="cat-row"><div class="cat-rl">Motivo</div><div class="cat-rv" style="color:var(--r2)">Ley 1355 · menores Colombia</div></div>
+      </div>
+    </div>
+
+    <div style="padding:0 16px 16px">
+      <button class="btn btn-pri" style="width:100%;padding:14px 0;border-radius:16px;font-size:13px" onclick="toast('✅ Categorías guardadas')">Guardar cambios</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" stroke="#8B90B2" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/><path d="M7 14.5a2 2 0 004 0" stroke="#8B90B2" stroke-width="1.3"/></svg></div><div class="bni-l">Alertas</div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic on"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/></svg></div><div class="bni-l on">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ S5: SAFE-ZONES ════════════ -->
+<div class="demo-wrap" id="s5" style="display:none">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left"><div class="label">Control de zonas</div><div class="title">Safe-zones</div></div>
+      <div class="topbar-right">
+        <div class="tb-btn" style="background:var(--p);border-color:var(--p)" onclick="toast('Crear nueva zona…')"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="av" onclick="sw(8)">AM</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="loc-now">
+        <div class="loc-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6.2 2 4 4.2 4 7c0 4 5 9.5 5 9.5S14 11 14 7c0-2.8-2.2-5-5-5Z" stroke="#fff" stroke-width="1.4"/><circle cx="9" cy="7" r="2" stroke="#fff" stroke-width="1.3"/></svg></div>
+        <div class="loc-info"><div class="loc-name">Sebastián está en zona segura</div><div class="loc-sub">Colegio San Carlos · hace 3 min</div></div>
+        <div class="loc-badge">En zona</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Zonas activas · 3</div></div>
+      <div class="zone-card">
+        <div class="zone-ic" style="background:var(--g3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6.2 2 4 4.2 4 7c0 4 5 9.5 5 9.5S14 11 14 7c0-2.8-2.2-5-5-5Z" stroke="#0A6B52" stroke-width="1.3"/><circle cx="9" cy="7" r="2" stroke="#0A6B52" stroke-width="1.2"/></svg></div>
+        <div class="zone-info"><div class="zone-name">Colegio San Carlos</div><div class="zone-rule">Libre · sin límite · lun-vie 6am–6pm</div><div style="margin-top:4px"><span class="role-chip" style="background:var(--g3);color:var(--g)">Zona libre</span></div></div>
+        <div class="toggle tg-on" onclick="tgl(this)"><div class="tdot"></div></div>
+      </div>
+      <div class="zone-card">
+        <div class="zone-ic" style="background:var(--g3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6.2 2 4 4.2 4 7c0 4 5 9.5 5 9.5S14 11 14 7c0-2.8-2.2-5-5-5Z" stroke="#0A6B52" stroke-width="1.3"/><circle cx="9" cy="7" r="2" stroke="#0A6B52" stroke-width="1.2"/></svg></div>
+        <div class="zone-info"><div class="zone-name">Casa</div><div class="zone-rule">Límite $30K · comercios autorizados</div><div style="margin-top:4px"><span class="role-chip" style="background:var(--b3);color:var(--b2)">Zona controlada</span></div></div>
+        <div class="toggle tg-on" onclick="tgl(this)"><div class="tdot"></div></div>
+      </div>
+      <div class="zone-card">
+        <div class="zone-ic" style="background:var(--a3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6.2 2 4 4.2 4 7c0 4 5 9.5 5 9.5S14 11 14 7c0-2.8-2.2-5-5-5Z" stroke="#C96800" stroke-width="1.3"/><circle cx="9" cy="7" r="2" stroke="#C96800" stroke-width="1.2"/></svg></div>
+        <div class="zone-info"><div class="zone-name">Centro Comercial</div><div class="zone-rule">Requiere aprobación · máx $50K</div><div style="margin-top:4px"><span class="role-chip" style="background:var(--a3);color:var(--a2)">Con aprobación</span></div></div>
+        <div class="toggle tg-on" onclick="tgl(this)"><div class="tdot"></div></div>
+      </div>
+      <div class="zone-card" style="opacity:.55">
+        <div class="zone-ic" style="background:var(--r3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6.2 2 4 4.2 4 7c0 4 5 9.5 5 9.5S14 11 14 7c0-2.8-2.2-5-5-5Z" stroke="#C82828" stroke-width="1.3"/><circle cx="9" cy="7" r="2" stroke="#C82828" stroke-width="1.2"/></svg></div>
+        <div class="zone-info"><div class="zone-name">Zona Norte · discotecas</div><div class="zone-rule">Bloqueado siempre</div><div style="margin-top:4px"><span class="role-chip" style="background:var(--r3);color:var(--r2)">Bloqueada</span></div></div>
+        <div class="toggle tg-off" onclick="tgl(this)"><div class="tdot"></div></div>
+      </div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" stroke="#8B90B2" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Alertas</div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic on"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#3730C8" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l on">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ S6: MOVIMIENTOS ════════════ -->
+<div class="demo-wrap" id="s6" style="display:none">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left"><div class="label">Historial</div><div class="title">Movimientos</div></div>
+      <div class="topbar-right">
+        <div class="tb-btn" onclick="toast('Filtrar…')"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M4 8h8M6 12h4" stroke="#8B90B2" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+        <div class="av" onclick="sw(8)">AM</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="tag-row">
+        <div class="tag" style="background:var(--p3);color:var(--p)">Todo</div>
+        <div class="tag" onclick="toast('Filtrar gastos')">Gastos</div>
+        <div class="tag" onclick="toast('Filtrar ingresos')">Ingresos</div>
+        <div class="tag" onclick="toast('Solo alertas')">Alertas</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Hoy · 30 mayo</div></div>
+      <div class="mov"><div class="mov-ic" style="background:var(--g3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M4 7l4-4 4 4" stroke="#0A6B52" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mov-body"><div class="mov-t">Mesada · hito semanal</div><div class="mov-m"><span class="mv-tag mv-breb">Bre-B</span> 8:00am</div></div><div class="mov-amt" style="color:var(--g)">+$20.000</div></div>
+      <div class="mov"><div class="mov-ic" style="background:var(--r3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="2" stroke="#C82828" stroke-width="1.3"/><path d="M2 7.5h12" stroke="#C82828" stroke-width="1.1"/></svg></div><div class="mov-body"><div class="mov-t">Rappi · Domicilio</div><div class="mov-m"><span class="mv-tag mv-safe">Colegio ✓</span> 2:15pm</div></div><div class="mov-amt" style="color:var(--r2)">-$18.500</div></div>
+      <div class="mov"><div class="mov-ic" style="background:var(--r3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="2" stroke="#C82828" stroke-width="1.3"/><path d="M2 7.5h12" stroke="#C82828" stroke-width="1.1"/></svg></div><div class="mov-body"><div class="mov-t">Tienda escolar</div><div class="mov-m"><span class="mv-tag mv-safe">Colegio ✓</span> 10:30am</div></div><div class="mov-amt" style="color:var(--r2)">-$4.200</div></div>
+    </div>
+    <div style="height:1px;background:var(--bdr);margin:4px 16px 0"></div>
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Ayer · 29 mayo</div></div>
+      <div class="mov"><div class="mov-ic" style="background:var(--g3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M4 7l4-4 4 4" stroke="#0A6B52" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mov-body"><div class="mov-t">Desembolso · tareas del hogar</div><div class="mov-m"><span class="mv-tag mv-breb">Hito aprobado</span> 8:00am</div></div><div class="mov-amt" style="color:var(--g)">+$15.000</div></div>
+      <div class="mov"><div class="mov-ic" style="background:var(--g3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M4 7l4-4 4 4" stroke="#0A6B52" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mov-body"><div class="mov-t">Aporte · Abuelo Pedro</div><div class="mov-m"><span class="mv-tag mv-breb">Bre-B directo</span> 12:00pm</div></div><div class="mov-amt" style="color:var(--g)">+$20.000</div></div>
+      <div class="mov"><div class="mov-ic" style="background:var(--r3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="2" stroke="#C82828" stroke-width="1.3"/><path d="M2 7.5h12" stroke="#C82828" stroke-width="1.1"/></svg></div><div class="mov-body"><div class="mov-t">Transmilenio · recarga</div><div class="mov-m"><span class="mv-tag mv-safe">Casa ✓</span> 7:45am</div></div><div class="mov-amt" style="color:var(--r2)">-$10.000</div></div>
+    </div>
+    <div style="height:1px;background:var(--bdr);margin:4px 16px 0"></div>
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">28 mayo</div></div>
+      <div class="mov" style="background:var(--a3);border-color:var(--a4)"><div class="mov-ic" style="background:var(--a3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2.5L14 13H2L8 2.5Z" stroke="#C96800" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 7v3" stroke="#C96800" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="mov-body"><div class="mov-t">Pago rechazado</div><div class="mov-m"><span class="mv-tag mv-block">Andino · bloqueado</span> 5:15pm</div></div><div class="mov-amt" style="color:var(--a2)">$35.000</div></div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" stroke="#8B90B2" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Alertas</div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic on"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#3730C8" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l on">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ S7: NUEVA CUENTA ════════════ -->
+<div class="demo-wrap" id="s7" style="display:none">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left"><div class="label">Onboarding</div><div class="title">Nueva cuenta</div></div>
+      <div class="topbar-right"><div class="tb-btn" onclick="sw(3)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="#8B90B2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="av" onclick="sw(8)">AM</div></div>
+    </div>
+
+    <div class="sec">
+      <!-- Prog bar -->
+      <div style="background:var(--surf);border-radius:12px;overflow:hidden;margin-bottom:12px">
+        <div style="height:5px;background:var(--bdr2);position:relative"><div style="height:5px;width:60%;background:var(--p);border-radius:3px;transition:width .4s"></div></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 12px">
+          <div style="font-size:10px;font-weight:700;color:var(--p)">Paso 3 de 5 · Datos del menor</div>
+          <div style="font-size:10px;color:var(--txt3)">60%</div>
+        </div>
+      </div>
+
+      <div class="onb-step done-s">
+        <div class="onb-hdr"><div class="onb-num" style="background:var(--g3);color:var(--g)">✓</div><div><div class="onb-ttl">Verificación del tutor</div><div class="onb-sub">Biometría + OTP completados</div></div></div>
+      </div>
+      <div class="onb-step done-s">
+        <div class="onb-hdr"><div class="onb-num" style="background:var(--g3);color:var(--g)">✓</div><div><div class="onb-ttl">Cuenta origen vinculada</div><div class="onb-sub">Ahorros ··4521 · Bre-B activo</div></div></div>
+      </div>
+      <div class="onb-step active-s">
+        <div class="onb-hdr"><div class="onb-num" style="background:var(--p);color:#fff">3</div><div><div class="onb-ttl">Datos del menor</div><div class="onb-sub">Identidad para cuenta amparada</div></div></div>
+        <div class="field"><div class="field-l">Nombre completo</div><div class="field-v">Sebastián Andrés Ramírez</div></div>
+        <div class="field"><div class="field-l">Fecha de nacimiento</div><div class="field-v">12/03/2009 · 15 años</div></div>
+        <div class="field"><div class="field-l">T.I. número</div><div class="field-v">100.345.678</div></div>
+        <div class="field"><div class="field-l">Teléfono del menor</div><div class="field-v ph">+57 310 ··· ····</div></div>
+        <button class="btn btn-pri" style="width:100%;margin-top:10px;padding:12px;border-radius:13px" onclick="toast('Avanzando al paso 4…')">Continuar →</button>
+      </div>
+      <div class="onb-step pend-s">
+        <div class="onb-hdr"><div class="onb-num" style="background:var(--surf);color:var(--txt3)">4</div><div><div class="onb-ttl">Configurar mesada</div><div class="onb-sub">Monto y modo de liberación</div></div></div>
+      </div>
+      <div class="onb-step pend-s">
+        <div class="onb-hdr"><div class="onb-num" style="background:var(--surf);color:var(--txt3)">5</div><div><div class="onb-ttl">Categorías y límites</div><div class="onb-sub">Restricciones iniciales por edad</div></div></div>
+      </div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" stroke="#8B90B2" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Alertas</div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic on"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#3730C8" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l on">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ════════════ S8: PERFIL ════════════ -->
+<div class="demo-wrap" id="s8" style="display:none">
+<div>
+<div class="phone">
+  <div class="dyn-island"></div>
+  <div class="sbar"><span class="sbar-t">9:41</span><div class="sbar-r"><div class="bat"></div></div></div>
+  <div class="pbody">
+    <div class="topbar">
+      <div class="topbar-left"><div class="label">Configuración</div><div class="title">Mi perfil</div></div>
+      <div class="topbar-right"><div class="av">AM</div></div>
+    </div>
+
+    <div class="sec">
+      <div class="fam-card" style="background:linear-gradient(135deg,var(--p3),var(--b3));border-color:var(--p4)">
+        <div style="width:48px;height:48px;border-radius:16px;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0">AM</div>
+        <div class="fam-info"><div class="fam-name" style="font-size:14px">Andrea Morales</div><div class="fam-role">Tutora principal · Sebastián</div></div>
+        <div onclick="toast('Editar perfil…')" style="width:32px;height:32px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--bdr)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5L11.5 4.5L5 11H3v-2L9.5 2.5Z" stroke="#8B90B2" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Menores vinculados</div><div class="sec-action" onclick="openModal('mAddHijo')">+ Añadir</div></div>
+      <div class="fam-card" onclick="sw(0)" style="cursor:pointer;border-color:rgba(55,48,200,.15)">
+        <div style="width:38px;height:38px;border-radius:13px;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">SA</div>
+        <div class="fam-info"><div class="fam-name">Sebastián · 15 años</div><div class="fam-role">Score 78 · cuenta activa · $47.5K saldo</div></div>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Herramientas</div></div>
+      <div class="pref-row" onclick="sw(5)">
+        <div class="pref-ic" style="background:var(--g3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6.2 2 4 4.2 4 7c0 4 5 9.5 5 9.5S14 11 14 7c0-2.8-2.2-5-5-5Z" stroke="#0A6B52" stroke-width="1.3"/><circle cx="9" cy="7" r="2" stroke="#0A6B52" stroke-width="1.2"/></svg></div>
+        <div class="pref-info"><div class="pref-t">Safe-zones</div><div class="pref-s">3 zonas activas · Sebastián en zona segura</div></div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l5 5-5 5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="pref-row" onclick="sw(6)">
+        <div class="pref-ic" style="background:var(--b3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2.5" stroke="#1A3FAA" stroke-width="1.3"/><path d="M2 8h14" stroke="#1A3FAA" stroke-width="1.1"/></svg></div>
+        <div class="pref-info"><div class="pref-t">Movimientos</div><div class="pref-s">Historial completo de transacciones</div></div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l5 5-5 5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="pref-row" onclick="sw(2)">
+        <div class="pref-ic" style="background:var(--p3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L10.5 6H15L11.5 8.5L12.8 13L9 10.5L5.2 13L6.5 8.5L3 6H7.5L9 2Z" stroke="#3730C8" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+        <div class="pref-info"><div class="pref-t">Retos</div><div class="pref-s">5 activos · 1 pendiente revisión</div></div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l5 5-5 5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-hdr"><div class="sec-ttl">Cuenta y seguridad</div></div>
+      <div class="pref-row" onclick="toast('Notificaciones…')">
+        <div class="pref-ic" style="background:var(--a3)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2C6.2 2 4 4.2 4 7c0 4-2 5-2 5h14s-2-1-2-5C14 4.2 11.8 2 9 2Z" stroke="#C96800" stroke-width="1.3"/><path d="M7 14a2 2 0 004 0" stroke="#C96800" stroke-width="1.2"/></svg></div>
+        <div class="pref-info"><div class="pref-t">Notificaciones</div><div class="pref-s">Todas activadas · push y SMS</div></div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l5 5-5 5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="pref-row" onclick="toast('Seguridad y biometría…')">
+        <div class="pref-ic" style="background:var(--surf)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="7" width="12" height="9" rx="2.5" stroke="#8B90B2" stroke-width="1.3"/><path d="M6 7V5a3 3 0 116 0v2" stroke="#8B90B2" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+        <div class="pref-info"><div class="pref-t">Seguridad y biometría</div><div class="pref-s">Face ID activado · PIN configurado</div></div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l5 5-5 5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="sw(0)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2.5 8L9 2.5L15.5 8V16H11.5V12H6.5V16H2.5V8Z" stroke="#8B90B2" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div class="bni-l">Inicio</div></div>
+    <div class="bni" onclick="sw(1)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C6.2 1.5 4 3.7 4 6.5c0 3.8-2.5 5-2.5 5h15s-2.5-1.2-2.5-5C14 3.7 11.8 1.5 9 1.5Z" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Alertas</div></div>
+    <div class="bni" onclick="sw(3)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#8B90B2" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#8B90B2" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l">Familia</div></div>
+    <div class="bni" onclick="sw(4)"><div class="bni-ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/><rect x="10" y="10" width="6" height="6" rx="2" stroke="#8B90B2" stroke-width="1.4"/></svg></div><div class="bni-l">Categorías</div></div>
+    <div class="bni" onclick="sw(8)"><div class="bni-ic on"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3.5" fill="rgba(55,48,200,.12)" stroke="#3730C8" stroke-width="1.4"/><path d="M2.5 17c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#3730C8" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="bni-l on">Perfil</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// ── NAVIGATION ──
+function sw(i){
+  for(var j=0;j<9;j++){
+    var el=document.getElementById('s'+j);
+    if(el) el.style.display=j===i?'flex':'none';
+    var tabs=document.querySelectorAll('.stab');
+    if(tabs[j]) tabs[j].classList.toggle('on',j===i);
+  }
+  // Scroll the phone body inside the active screen to top
+  var activeScreen=document.getElementById('s'+i);
+  if(activeScreen){
+    var pb=activeScreen.querySelector('.pbody');
+    if(pb) pb.scrollTop=0;
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── MODALS ──
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(function(el){
+  el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('open')});
+});
+
+// ── TOAST ──
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(window._ti);
+  window._ti=setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(70px)'},2600);
+}
+
+// ── LIMITS ──
+var vals={
+  'cv-alim':35000,'cv-transp':20000,'cv-entret':25000,
+  'cv-entret-ap':30000,'cv-moda':80000,'cv-tech':50000
+};
+function cl(id,d){
+  var mn=id.includes('moda')||id.includes('tech')?10000:5000;
+  vals[id]=Math.max(mn,(vals[id]||0)+d);
+  var el=document.getElementById(id);
+  if(el)el.textContent='$'+(vals[id]).toLocaleString('es-CO');
+  toast('Límite actualizado');
+}
+
+// ── TOGGLE ──
+function tgl(el){
+  var on=el.classList.contains('tg-on');
+  el.classList.toggle('tg-on',!on);
+  el.classList.toggle('tg-off',on);
+  toast(on?'Desactivado':'Activado');
+}
+
+// ── AGE PROFILES ──
+var ages={
+  11:{alim:'Control',transp:'Libre',entret:'Bloqueado',moda:'Control',tech:'Bloqueado',bar:'5%'},
+  12:{alim:'Control',transp:'Libre',entret:'Bloqueado',moda:'Control',tech:'Bloqueado',bar:'19%'},
+  13:{alim:'Libre',transp:'Libre',entret:'Control',moda:'Control',tech:'Control',bar:'33%'},
+  14:{alim:'Libre',transp:'Libre',entret:'Control',moda:'Control',tech:'Control',bar:'49%'},
+  15:{alim:'Libre',transp:'Libre',entret:'Control',moda:'Control',tech:'Control',bar:'63%'},
+  16:{alim:'Libre',transp:'Libre',entret:'Libre',moda:'Control',tech:'Control',bar:'79%'},
+  17:{alim:'Libre',transp:'Libre',entret:'Libre',moda:'Libre',tech:'Control',bar:'95%'}
+};
+var stMap={'Libre':'st-free','Control':'st-ctrl','Bloqueado':'st-lock'};
+var stLbl={'Libre':'Libre','Control':'Control','Bloqueado':'Bloqueado'};
+function setAge(age,btn){
+  document.querySelectorAll('.age-pill').forEach(function(p){p.classList.remove('on')});
+  btn.classList.add('on');
+  var p=ages[age]; if(!p)return;
+  var bar=document.getElementById('age-bar');
+  if(bar)bar.style.width=p.bar;
+  var map={alim:'cst-alim',transp:'cst-transp',entret:'cst-entret',moda:'cst-moda',tech:'cst-tech'};
+  Object.keys(map).forEach(function(k){
+    var el=document.getElementById(map[k]);
+    if(el){el.className='cat-st '+stMap[p[k]];el.textContent=stLbl[p[k]];}
+  });
+  toast('Perfil · '+age+' años actualizado');
+}
+</script>
+</body>
+</html>
